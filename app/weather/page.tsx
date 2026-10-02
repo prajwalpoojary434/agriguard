@@ -9,6 +9,8 @@ import { getWeather } from '@/lib/services/weather'
 
 export const metadata: Metadata = { title: 'Weather', description: 'Current conditions and a 7-day farm forecast.' }
 
+export const dynamic = 'force-dynamic'
+
 export default async function WeatherPage() {
   const { current, forecast, advisory } = await getWeather()
   const weeklyRain = forecast.reduce((sum, d) => sum + d.rainfall, 0)

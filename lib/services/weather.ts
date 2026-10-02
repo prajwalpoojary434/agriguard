@@ -1,4 +1,4 @@
-import { DEFAULT_LOCATION } from '@/lib/config'
+import { APP_TIMEZONE, DEFAULT_LOCATION } from '@/lib/config'
 import type { ForecastDay, WeatherCondition, WeatherReport } from '@/lib/types'
 
 const FORECAST_PATTERN: Array<{
@@ -17,15 +17,26 @@ const FORECAST_PATTERN: Array<{
   { condition: 'partly-cloudy', high: 30, low: 22, rainChance: 25, rainfall: 1 },
 ]
 
+function calendarDateInAppTimezone(daysFromToday: number) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: APP_TIMEZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date())
+  const value = (type: Intl.DateTimeFormatPartTypes) =>
+    Number(parts.find((part) => part.type === type)?.value)
+
+  return new Date(Date.UTC(value('year'), value('month') - 1, value('day') + daysFromToday))
+}
+
 function buildForecast(): ForecastDay[] {
-  const today = new Date()
   return FORECAST_PATTERN.map((entry, index) => {
-    const date = new Date(today)
-    date.setDate(today.getDate() + index)
+    const date = calendarDateInAppTimezone(index)
     return {
       ...entry,
-      day: index === 0 ? 'Today' : date.toLocaleDateString('en-US', { weekday: 'short' }),
-      date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      day: index === 0 ? 'Today' : date.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' }),
+      date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }),
     }
   })
 }

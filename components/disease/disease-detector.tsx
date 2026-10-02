@@ -1,7 +1,7 @@
 'use client'
 
 import { Camera, ImageUp, Loader2, RotateCcw, ScanLine } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { DiseaseResultCard } from '@/components/disease/disease-result-card'
 import { Button } from '@/components/ui/button'
 import type { DiseaseResult } from '@/lib/types'
@@ -16,13 +16,18 @@ export function DiseaseDetector() {
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<DiseaseResult | null>(null)
 
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview)
+    }
+  }, [preview])
+
   function selectFile(next: File | undefined) {
     if (!next) return
     if (!next.type.startsWith('image/')) {
       setError('Please choose an image file (JPG or PNG).')
       return
     }
-    if (preview) URL.revokeObjectURL(preview)
     setFile(next)
     setPreview(URL.createObjectURL(next))
     setResult(null)
@@ -30,7 +35,6 @@ export function DiseaseDetector() {
   }
 
   function reset() {
-    if (preview) URL.revokeObjectURL(preview)
     setFile(null)
     setPreview(null)
     setResult(null)
@@ -63,7 +67,6 @@ export function DiseaseDetector() {
           ref={inputRef}
           type="file"
           accept="image/*"
-          capture="environment"
           className="sr-only"
           id="leaf-image"
           onChange={(e) => selectFile(e.target.files?.[0])}

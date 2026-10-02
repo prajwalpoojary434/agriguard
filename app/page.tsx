@@ -6,11 +6,26 @@ import { DemoNotice } from '@/components/demo-mode-badge'
 import { formatPrice, PriceTrendBadge } from '@/components/market/price-trend'
 import { CurrentWeatherCard } from '@/components/weather/current-weather-card'
 import { WeatherIcon } from '@/components/weather/weather-icon'
+import { APP_TIMEZONE } from '@/lib/config'
 import { getMarketPrices } from '@/lib/services/market'
 import { getWeather } from '@/lib/services/weather'
 
+export const dynamic = 'force-dynamic'
+
+function hourInAppTimezone() {
+  const hour = new Intl.DateTimeFormat('en-GB', {
+    hour: 'numeric',
+    hourCycle: 'h23',
+    timeZone: APP_TIMEZONE,
+  })
+    .formatToParts(new Date())
+    .find((part) => part.type === 'hour')?.value
+
+  return Number(hour)
+}
+
 function greeting() {
-  const hour = new Date().getHours()
+  const hour = hourInAppTimezone()
   if (hour < 12) return 'Good morning'
   if (hour < 17) return 'Good afternoon'
   return 'Good evening'
@@ -35,7 +50,12 @@ export default async function DashboardPage() {
         <div className="relative flex flex-col gap-4 px-6 py-10 text-white md:px-10 md:py-14">
           <p className="flex items-center gap-2 text-sm font-medium text-white/85">
             <Sun className="size-4" aria-hidden="true" />
-            {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+            {new Date().toLocaleDateString('en-IN', {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long',
+              timeZone: APP_TIMEZONE,
+            })}
           </p>
           <h1 className="max-w-xl text-balance text-3xl font-bold tracking-tight md:text-5xl">
             {greeting()}, farmer.

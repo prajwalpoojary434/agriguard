@@ -5,3 +5,4 @@
 export const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== 'false'
 
 export const DEFAULT_LOCATION = 'Mandya, Karnataka'
+export const APP_TIMEZONE = 'Asia/Kolkata'

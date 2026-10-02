@@ -7,6 +7,8 @@ import { getMarketPrices, getPriceChange } from '@/lib/services/market'
 
 export const metadata: Metadata = { title: 'Market Prices', description: "Today's mandi prices with weekly trends." }
 
+export const dynamic = 'force-dynamic'
+
 export default async function MarketPage() {
   const prices = await getMarketPrices()
   const sorted = [...prices].sort((a, b) => getPriceChange(b).percent - getPriceChange(a).percent)
